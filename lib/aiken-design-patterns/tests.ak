@@ -1,9 +1,14 @@
 use aiken/bytearray
 use aiken/fuzz
-use aiken/hash.{Blake2b_224, blake2b_256}
+use aiken/hash.{Blake2b_224, Hash, blake2b_256}
 use aiken/list
-use aiken/transaction.{InlineDatum, Output, OutputReference}
-use aiken/transaction/credential.{Address, ScriptCredential}
+use aiken/transaction.{
+  InlineDatum, Output, OutputReference, ScriptPurpose, TransactionId,
+  WithdrawFrom,
+}
+use aiken/transaction/credential.{
+  Address, Credential, Inline, Referenced, Script, ScriptCredential,
+}
 use aiken/transaction/value
 use aiken_design_patterns/utils.{
   authentic_input_is_reproduced_unchanged, sum_of_squares,

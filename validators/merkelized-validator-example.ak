@@ -3,8 +3,8 @@ use aiken/fuzz
 use aiken/hash.{Blake2b_224, Hash}
 use aiken/interval
 use aiken/transaction.{
-  Redeemer, ScriptContext, ScriptPurpose, Transaction, TransactionId,
-  WithdrawFrom,
+  InlineDatum, Input, Output, Redeemer, ScriptContext, ScriptPurpose, Spend,
+  Transaction, TransactionId, WithdrawFrom, placeholder,
 }
 use aiken/transaction/credential.{Inline, Script, ScriptCredential}
 use aiken/transaction/value
@@ -312,12 +312,6 @@ test t_tx() {
   let ctx2 = ScriptContext { transaction: tx, purpose: Spend(oref2) }
   let ctx3 = ScriptContext { transaction: tx, purpose: Spend(oref3) }
   let ctx4 = ScriptContext { transaction: tx, purpose: Spend(oref4) }
-
-  let ctx9 =
-    ScriptContext {
-      transaction: tx,
-      purpose: WithdrawFrom(create_stake_credential(stakeHash)),
-    }
 
   spend(stakeHash, inDatum, redeemer, ctx1)? && spend(
     stakeHash,

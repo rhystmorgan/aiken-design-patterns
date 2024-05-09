@@ -4,10 +4,12 @@ use aiken/hash.{Blake2b_224, Hash}
 use aiken/interval
 use aiken/list
 use aiken/transaction.{
-  Input, NoDatum, Output, OutputReference, ScriptContext, Spend, Transaction,
-  TransactionId, WithdrawFrom,
+  InlineDatum, Input, NoDatum, Output, OutputReference, ScriptContext,
+  ScriptPurpose, Spend, Transaction, TransactionId, WithdrawFrom, placeholder,
 }
-use aiken/transaction/credential.{Address, Inline, Script, ScriptCredential}
+use aiken/transaction/credential.{
+  Address, Credential, Inline, Referenced, Script, ScriptCredential,
+}
 use aiken/transaction/value
 use aiken_design_patterns/multi_utxo_indexer_one_to_many as multi_utxo_indexer
 use aiken_design_patterns/stake_validator as stake_validator
@@ -478,7 +480,7 @@ test t_tx1() {
 }
 
 test t_tx2() {
-  let scriptHash = #"b32d1dbb92d894538a14f672e45998889904bd82bd0ea78ea3e6e6fb"
+  let scriptHash = #"fd0c6e0a4df97c264bf96ef663f3c97413b6ac0e7ed8eae3a0524b13"
   let scriptAddress = test_script_address(scriptHash)
   let singleValue =
     value.merge(value.from_lovelace(2), value.from_asset(#"aced", #"", 1))
@@ -494,9 +496,7 @@ test t_tx2() {
 
   let oref1 = test_oref(#"face", 1)
   let oref2 = test_oref(#"face", 2)
-  let oref3 = test_oref(#"face", 3)
-  let oref4 = test_oref(#"face", 4)
-  let oref5 = test_oref(#"face", 5)
+
   let inDatum = #"1234"
 
   let redeemer1 = (0, [0, 1, 2])

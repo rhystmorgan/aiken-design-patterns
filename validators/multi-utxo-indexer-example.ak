@@ -4,16 +4,16 @@ use aiken/hash.{Blake2b_224, Hash}
 use aiken/interval
 use aiken/list
 use aiken/transaction.{
-  Input, NoDatum, Output, OutputReference, ScriptContext, Spend, Transaction,
-  TransactionId, WithdrawFrom,
+  InlineDatum, Input, NoDatum, Output, OutputReference, ScriptContext, Spend,
+  Transaction, TransactionId, WithdrawFrom, placeholder,
 }
 use aiken/transaction/credential.{Address, Inline, Script, ScriptCredential}
 use aiken/transaction/value
 use aiken_design_patterns/multi_utxo_indexer as multi_utxo_indexer
 use aiken_design_patterns/stake_validator as stake_validator
 use aiken_design_patterns/tests.{
-  create_stake_credential, scriptCompare, stakeCompare, test_oref,
-  test_script_address, withPurpose,
+  create_stake_credential, stakeCompare, test_oref, test_script_address,
+  withPurpose,
 }
 use aiken_design_patterns/utils.{authentic_input_is_reproduced_unchanged}
 

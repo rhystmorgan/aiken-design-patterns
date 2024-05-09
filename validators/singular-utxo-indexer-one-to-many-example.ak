@@ -2,16 +2,13 @@ use aiken/dict
 use aiken/fuzz
 use aiken/interval
 use aiken/transaction.{
-  Input, NoDatum, Output, OutputReference, ScriptContext, Spend, Transaction,
-  TransactionId,
+  InlineDatum, Input, NoDatum, Output, OutputReference, ScriptContext, Spend,
+  Transaction, TransactionId, placeholder,
 }
 use aiken/transaction/credential.{Address, ScriptCredential}
 use aiken/transaction/value
 use aiken_design_patterns/singular_utxo_indexer_one_to_many as singular_utxo_indexer
-use aiken_design_patterns/tests.{
-  create_stake_credential, scriptCompare, stakeCompare, test_oref,
-  test_script_address, withPurpose,
-}
+use aiken_design_patterns/tests.{test_oref, test_script_address}
 
 validator(
   _state_token_symbol: value.PolicyId,

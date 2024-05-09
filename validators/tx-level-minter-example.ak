@@ -3,15 +3,12 @@ use aiken/fuzz
 use aiken/hash.{Blake2b_224, Hash}
 use aiken/interval
 use aiken/transaction.{
-  Input, Mint, NoDatum, Output, OutputReference, Redeemer, ScriptContext, Spend,
-  Transaction, TransactionId, placeholder,
+  InlineDatum, Input, Mint, NoDatum, Output, OutputReference, Redeemer,
+  ScriptContext, Spend, Transaction, TransactionId, placeholder,
 }
 use aiken/transaction/credential.{Address, Script, ScriptCredential}
 use aiken/transaction/value
-use aiken_design_patterns/tests.{
-  create_stake_credential, scriptCompare, stakeCompare, test_oref,
-  test_script_address, withPurpose,
-}
+use aiken_design_patterns/tests.{test_oref, test_script_address}
 use aiken_design_patterns/tx_level_minter as tx_level_minter
 
 validator {
@@ -200,9 +197,6 @@ test t_tx() {
   let redeemer4 = 3
   let redeemer5 = 4
   let redeemer6 = 5
-
-  let redeemers =
-    [redeemer1, redeemer2, redeemer3, redeemer4, redeemer5, redeemer6]
 
   let input1 =
     Input {
