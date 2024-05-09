@@ -326,3 +326,273 @@ test prop_withdraw_validator(r via random_withdraw_input()) {
   let ctx = ScriptContext { purpose: script_purpose, transaction: tx }
   withdraw(r.state_token_symbol, r.token_name, r.redeemer, ctx)
 }
+
+// Example Transaction Test //
+
+fn test_oref(h: ByteArray, i: Int) -> OutputReference {
+  let oref: OutputReference =
+    OutputReference {
+      transaction_id: TransactionId { hash: h },
+      output_index: i,
+    }
+  oref
+}
+
+fn test_script_address(s: Hash<Blake2b_224, Script>) -> Address {
+  credential.from_script(s)
+}
+
+fn create_stake_credential(
+  s: Hash<Blake2b_224, Script>,
+) -> Referenced<Credential> {
+  Inline(ScriptCredential(s))
+}
+
+fn withPurpose(hash: ByteArray) -> ScriptPurpose {
+  let stake = create_stake_credential(hash)
+  WithdrawFrom(stake)
+}
+
+fn stakeCompare(
+  left: Referenced<Credential>,
+  right: Referenced<Credential>,
+) -> Ordering {
+  if left == right {
+    Equal
+  } else {
+    Less
+  }
+}
+
+test t_tx1() {
+  let scriptHash = #"fd0c6e0a4df97c264bf96ef663f3c97413b6ac0e7ed8eae3a0524b13"
+  let scriptAddress = test_script_address(scriptHash)
+  let singleValue =
+    value.merge(value.from_lovelace(2), value.from_asset(#"aced", #"", 1))
+  let multiValue =
+    value.merge(value.from_lovelace(2), value.from_asset(#"aced", #"", 3))
+
+  let withdraw0 =
+    dict.from_ascending_list(
+      [(create_stake_credential(scriptHash), 0)],
+      stakeCompare,
+    )
+
+  let oref1 = test_oref(#"face", 1)
+  let oref2 = test_oref(#"face", 2)
+
+  let inDatum = #"1234"
+
+  let redeemer1 = (0, [0, 1, 2])
+  let redeemer2 = (1, [3, 4, 5])
+
+  let redeemerList =
+    [redeemer1, redeemer2]
+
+  let input1 =
+    Input {
+      output_reference: oref1,
+      output: Output {
+        address: scriptAddress,
+        value: multiValue,
+        datum: InlineDatum(inDatum),
+        reference_script: None,
+      },
+    }
+
+  let input2 =
+    Input {
+      output_reference: oref2,
+      output: Output {
+        address: scriptAddress,
+        value: multiValue,
+        datum: InlineDatum(inDatum),
+        reference_script: None,
+      },
+    }
+
+  let output1 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output2 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output3 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+  let output4 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output5 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output6 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  // two inputs from the same script address
+  let inputs =
+    [input1, input2]
+  let outputs =
+    [output1, output2, output3, output4, output5, output6]
+
+  let tx =
+    Transaction {
+      ..placeholder(),
+      inputs: inputs,
+      outputs: outputs,
+      withdrawals: withdraw0,
+    }
+
+  let ctx1 = ScriptContext { transaction: tx, purpose: withPurpose(scriptHash) }
+
+  withdraw(#"aced", #"", redeemerList, ctx1)?
+}
+
+test t_tx2() {
+  let scriptHash = #"b32d1dbb92d894538a14f672e45998889904bd82bd0ea78ea3e6e6fb"
+  let scriptAddress = test_script_address(scriptHash)
+  let singleValue =
+    value.merge(value.from_lovelace(2), value.from_asset(#"aced", #"", 1))
+
+  let multiValue =
+    value.merge(value.from_lovelace(2), value.from_asset(#"aced", #"", 3))
+
+  let withdraw0 =
+    dict.from_ascending_list(
+      [(create_stake_credential(scriptHash), 0)],
+      stakeCompare,
+    )
+
+  let oref1 = test_oref(#"face", 1)
+  let oref2 = test_oref(#"face", 2)
+  let oref3 = test_oref(#"face", 3)
+  let oref4 = test_oref(#"face", 4)
+  let oref5 = test_oref(#"face", 5)
+  let inDatum = #"1234"
+
+  let redeemer1 = (0, [0, 1, 2])
+  let redeemer2 = (1, [3, 4, 5])
+
+  let input1 =
+    Input {
+      output_reference: oref1,
+      output: Output {
+        address: scriptAddress,
+        value: multiValue,
+        datum: InlineDatum(inDatum),
+        reference_script: None,
+      },
+    }
+
+  let input2 =
+    Input {
+      output_reference: oref2,
+      output: Output {
+        address: scriptAddress,
+        value: multiValue,
+        datum: InlineDatum(inDatum),
+        reference_script: None,
+      },
+    }
+
+  let output1 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output2 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output3 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+  let output4 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output5 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output6 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  // two inputs from the same script address
+  let inputs =
+    [input1, input2]
+  let outputs =
+    [output1, output2, output3, output4, output5, output6]
+
+  let tx =
+    Transaction {
+      ..placeholder(),
+      inputs: inputs,
+      outputs: outputs,
+      withdrawals: withdraw0,
+    }
+
+  let ctx1 = ScriptContext { transaction: tx, purpose: Spend(oref1) }
+  let ctx2 = ScriptContext { transaction: tx, purpose: Spend(oref2) }
+
+  spend(#"aced", #"", inDatum, redeemer1, ctx1)? && spend(
+    #"aced",
+    #"",
+    inDatum,
+    redeemer2,
+    ctx2,
+  )?
+}

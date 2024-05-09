@@ -1,8 +1,8 @@
 use aiken/bytearray
 use aiken/fuzz
-use aiken/hash.{blake2b_256}
+use aiken/hash.{Blake2b_224, blake2b_256}
 use aiken/list
-use aiken/transaction.{InlineDatum, Output}
+use aiken/transaction.{InlineDatum, Output, OutputReference}
 use aiken/transaction/credential.{Address, ScriptCredential}
 use aiken/transaction/value
 use aiken_design_patterns/utils.{
@@ -91,4 +91,45 @@ test prop_sum_of_squares_non_negative(xs: List<Int> via fuzz.list(fuzz.int())) {
 test prop_sum_of_squares_length(xs: List<Int> via fuzz.list(fuzz.int())) {
   let result = sum_of_squares(xs)
   list.length(result) == 1
+}
+
+// Testing Helper Functions //
+
+pub fn test_oref(h: ByteArray, i: Int) -> OutputReference {
+  let oref: OutputReference =
+    OutputReference {
+      transaction_id: TransactionId { hash: h },
+      output_index: i,
+    }
+  oref
+}
+
+pub fn test_script_address(s: Hash<Blake2b_224, Script>) -> Address {
+  credential.from_script(s)
+}
+
+pub fn create_stake_credential(
+  s: Hash<Blake2b_224, Script>,
+) -> Referenced<Credential> {
+  Inline(ScriptCredential(s))
+}
+
+pub fn stakeCompare(
+  left: Referenced<Credential>,
+  right: Referenced<Credential>,
+) -> Ordering {
+  if left == right {
+    Equal
+  } else {
+    Less
+  }
+}
+
+pub fn scriptCompare(_left: ScriptPurpose, _right: ScriptPurpose) -> Ordering {
+  Less
+}
+
+pub fn withPurpose(hash: ByteArray) -> ScriptPurpose {
+  let stake = create_stake_credential(hash)
+  WithdrawFrom(stake)
 }

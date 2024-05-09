@@ -9,6 +9,10 @@ use aiken/transaction.{
 use aiken/transaction/credential.{Address, Inline, Script, ScriptCredential}
 use aiken/transaction/value
 use aiken_design_patterns/stake_validator as stake_validator
+use aiken_design_patterns/tests.{
+  create_stake_credential, scriptCompare, stakeCompare, test_oref,
+  test_script_address, withPurpose,
+}
 
 validator {
   fn spend(_datum, _redeemer, ctx: ScriptContext) {
@@ -182,4 +186,173 @@ test prop_withdraw_validator(r via random_withdraw_input()) {
       transaction: transaction.placeholder(),
     }
   withdraw(r.redeemer, ctx)
+}
+
+// Example Transaction Test //
+
+test t_tx() {
+  let scriptHash = #"e60add40af9cfecd31f6b509ede4bd3031b1af8144fae1ec748a37cc"
+  let scriptAddress = test_script_address(scriptHash)
+  let authValue =
+    value.merge(value.from_lovelace(2), value.from_asset(#"aced", #"aced", 1))
+
+  let withdraw0 =
+    dict.from_ascending_list(
+      [(create_stake_credential(scriptHash), 0)],
+      stakeCompare,
+    )
+
+  let oref1 = test_oref(#"face", 1)
+  let oref2 = test_oref(#"cafe", 2)
+  let oref3 = test_oref(#"dead", 1)
+  let oref4 = test_oref(#"face", 2)
+  let oref5 = test_oref(#"cafe", 5)
+  let oref6 = test_oref(#"dead", 3)
+
+  let inDatum = #"1234"
+
+  let redeemer = #"1234"
+
+  let input1 =
+    Input {
+      output_reference: oref1,
+      output: Output {
+        address: scriptAddress,
+        value: authValue,
+        datum: InlineDatum(inDatum),
+        reference_script: None,
+      },
+    }
+
+  let input2 =
+    Input {
+      output_reference: oref2,
+      output: Output {
+        address: scriptAddress,
+        value: authValue,
+        datum: InlineDatum(inDatum),
+        reference_script: None,
+      },
+    }
+
+  let input3 =
+    Input {
+      output_reference: oref3,
+      output: Output {
+        address: scriptAddress,
+        value: authValue,
+        datum: InlineDatum(inDatum),
+        reference_script: None,
+      },
+    }
+  let input4 =
+    Input {
+      output_reference: oref4,
+      output: Output {
+        address: scriptAddress,
+        value: authValue,
+        datum: InlineDatum(inDatum),
+        reference_script: None,
+      },
+    }
+
+  let input5 =
+    Input {
+      output_reference: oref5,
+      output: Output {
+        address: scriptAddress,
+        value: authValue,
+        datum: InlineDatum(inDatum),
+        reference_script: None,
+      },
+    }
+
+  let input6 =
+    Input {
+      output_reference: oref6,
+      output: Output {
+        address: scriptAddress,
+        value: authValue,
+        datum: InlineDatum(inDatum),
+        reference_script: None,
+      },
+    }
+
+  let output1 =
+    Output {
+      address: scriptAddress,
+      value: authValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output2 =
+    Output {
+      address: scriptAddress,
+      value: authValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output3 =
+    Output {
+      address: scriptAddress,
+      value: authValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+  let output4 =
+    Output {
+      address: scriptAddress,
+      value: authValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output5 =
+    Output {
+      address: scriptAddress,
+      value: authValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output6 =
+    Output {
+      address: scriptAddress,
+      value: authValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  // two inputs from the same script address
+  let inputs =
+    [input1, input2, input3, input4, input5, input6]
+  let outputs =
+    [output1, output2, output3, output4, output5, output6]
+
+  let tx =
+    Transaction {
+      ..placeholder(),
+      inputs: inputs,
+      outputs: outputs,
+      withdrawals: withdraw0,
+    }
+
+  let ctx1 = ScriptContext { transaction: tx, purpose: Spend(oref1) }
+  let ctx2 = ScriptContext { transaction: tx, purpose: Spend(oref2) }
+  let ctx3 = ScriptContext { transaction: tx, purpose: Spend(oref3) }
+  let ctx4 = ScriptContext { transaction: tx, purpose: Spend(oref4) }
+  let ctx5 = ScriptContext { transaction: tx, purpose: Spend(oref5) }
+  let ctx6 = ScriptContext { transaction: tx, purpose: Spend(oref6) }
+
+  spend(inDatum, redeemer, ctx1)? && spend(inDatum, redeemer, ctx2)? && spend(
+    inDatum,
+    redeemer,
+    ctx3,
+  )? && spend(inDatum, redeemer, ctx4)? && spend(inDatum, redeemer, ctx5)? && spend(
+    inDatum,
+    redeemer,
+    ctx6,
+  )?
 }

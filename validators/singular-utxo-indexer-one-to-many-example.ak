@@ -8,6 +8,10 @@ use aiken/transaction.{
 use aiken/transaction/credential.{Address, ScriptCredential}
 use aiken/transaction/value
 use aiken_design_patterns/singular_utxo_indexer_one_to_many as singular_utxo_indexer
+use aiken_design_patterns/tests.{
+  create_stake_credential, scriptCompare, stakeCompare, test_oref,
+  test_script_address, withPurpose,
+}
 
 validator(
   _state_token_symbol: value.PolicyId,
@@ -156,4 +160,113 @@ test prop_spend_validator(r via random_spend_input()) {
     }
   let ctx = ScriptContext { purpose: script_purpose, transaction: tx }
   spend(r.policy_id, r.token_name, arbitrary_datum, redeemer, ctx)
+}
+
+// Example Transaction Test //
+
+test t_tx() {
+  let scriptHash = #"c3c1a8162219e63f2247b2eca23cb79353f6ad4159dfee9c1ff75e78"
+  let scriptAddress = test_script_address(scriptHash)
+  let singleValue =
+    value.merge(value.from_lovelace(2), value.from_asset(#"aced", #"", 1))
+  let multiValue =
+    value.merge(value.from_lovelace(2), value.from_asset(#"aced", #"", 3))
+
+  let oref1 = test_oref(#"face", 1)
+  let oref2 = test_oref(#"face", 2)
+
+  let inDatum = #"1234"
+
+  let redeemer1 = (0, [0, 1, 2])
+  let redeemer2 = (1, [3, 4, 5])
+
+  let input1 =
+    Input {
+      output_reference: oref1,
+      output: Output {
+        address: scriptAddress,
+        value: multiValue,
+        datum: InlineDatum(inDatum),
+        reference_script: None,
+      },
+    }
+
+  let input2 =
+    Input {
+      output_reference: oref2,
+      output: Output {
+        address: scriptAddress,
+        value: multiValue,
+        datum: InlineDatum(inDatum),
+        reference_script: None,
+      },
+    }
+
+  let output1 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output2 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output3 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+  let output4 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output5 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  let output6 =
+    Output {
+      address: scriptAddress,
+      value: singleValue,
+      datum: InlineDatum(inDatum),
+      reference_script: None,
+    }
+
+  // two inputs from the same script address
+  let inputs =
+    // [input1]
+    [input1, input2]
+  let outputs =
+    // [output1]
+    [output1, output2, output3, output4, output5, output6]
+
+  let tx = Transaction { ..placeholder(), inputs: inputs, outputs: outputs }
+
+  let ctx1 = ScriptContext { transaction: tx, purpose: Spend(oref1) }
+  let ctx2 = ScriptContext { transaction: tx, purpose: Spend(oref2) }
+
+  spend(#"aced", #"", inDatum, redeemer1, ctx1)? && spend(
+    #"aced",
+    #"",
+    inDatum,
+    redeemer2,
+    ctx2,
+  )?
 }
